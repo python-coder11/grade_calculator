@@ -1,0 +1,152 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Grade Calculator</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-T3c6CoIi6uLrA9TneNEoa7RxnatzjcDSCmG1MXxSR1GAsXEV/Dwwykc2MPK8M2HN" crossorigin="anonymous">
+    <style>
+        body {
+            background-color: #f8f9fa;
+        }
+
+        .container {
+            max-width: 600px;
+            margin-top: 50px;
+        }
+
+        .card {
+            border: none;
+            border-radius: 15px;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+        }
+
+        .card-header {
+            background-color: #007bff;
+            border-radius: 15px 15px 0 0;
+            padding: 20px;
+            color: #fff;
+            text-align: center;
+        }
+
+        .card-body {
+            padding: 20px;
+        }
+
+        .form-group {
+            margin-bottom: 20px;
+        }
+
+        .form-control {
+            border-radius: 10px;
+        }
+
+        .btn-primary {
+            background-color: #007bff;
+            border: none;
+            border-radius: 10px;
+            padding: 12px;
+            font-size: 18px;
+            transition: background-color 0.3s ease;
+        }
+
+        .btn-primary:hover {
+            background-color: #0056b3;
+        }
+
+        .alert {
+            border-radius: 10px;
+            text-align: center;
+            font-size: 18px;
+        }
+
+        .icon {
+            font-size: 24px;
+            margin-right: 10px;
+        }
+
+        .test-card {
+            background-color: #f8f9fa;
+            border: 1px solid #dee2e6;
+            border-radius: 10px;
+            padding: 20px;
+            margin-top: 20px;
+        }
+
+        @media (max-width: 576px) {
+            .container {
+                margin-top: 20px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="card">
+            <div class="card-header">
+                <h1 class="card-title">Grade Calculator</h1>
+            </div>
+            <div class="card-body">
+                <form method="post" id="gradeForm">
+                    <div class="form-group">
+                        <label for="num_of_tests">Number of Tests Taken</label>
+                        <input type="number" class="form-control" name="num_of_tests" required id="num_of_tests" value="{{ request.form.get('num_of_tests', '') }}">
+                    </div>
+                    
+                    <div class="test-card" id="testFieldsGroup" style="display: none;">
+                        <div class="row" id="testFieldsContainer"></div>
+                    </div>
+
+                    <div class="form-group">
+                        <label for="formative_grade">Formative Grade (0-100)</label>
+                        <input type="number" class="form-control" name="formative_grade" required value="{{ request.form.get('formative_grade', '') }}" min="0" max="100">
+                    </div>
+
+                    <div class="form-group">
+                        <label for="grade_test">Hypothetical Test Grade (0-100)</label>
+                        <input type="number" class="form-control" name="grade_test" required value="{{ request.form.get('grade_test', '') }}" min="0" max="100" step="0.01">
+                    </div>
+
+                    <button type="submit" class="btn btn-primary btn-block">
+                     Calculate
+                    </button>
+                </form>
+
+                {% if answer %}
+                    <div class="mt-4 alert alert-success">
+                        <span class="icon">&#x2705;</span> {{ answer }}
+                    </div>
+                {% endif %}
+            </div>
+        </div>
+    </div>
+
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js" integrity="sha384-C6RzsynM9kWDrMNeT87bh95OGNyZPhcTNXj1NW7RuBCsyN/o0jlpcV8Qyq46cDfL" crossorigin="anonymous"></script>
+
+    <script>
+        function updateTestFields() {
+            var numTests = document.getElementById('num_of_tests').value;
+            var container = document.getElementById('testFieldsContainer');
+            var group = document.getElementById('testFieldsGroup');
+
+            if (numTests > 0) {
+                group.style.display = 'block';
+                container.innerHTML = '';
+
+                for (var i = 0; i < numTests; i++) {
+                    var div = document.createElement('div');
+                    div.className = 'col-md-4 mb-3';
+                    div.innerHTML = '<label for="test_' + (i+1) + '">Test ' + (i+1) + ' Grade</label>' +
+                                    '<input type="number" class="form-control" name="test_' + (i+1) + '" required min="0" max="100" step="0.01">';
+                    container.appendChild(div);
+                }
+            } else {
+                group.style.display = 'none';
+            }
+        }
+
+        document.getElementById('num_of_tests').addEventListener('input', updateTestFields);
+        updateTestFields();
+    </script>
+</body>
+</html>
